@@ -6,14 +6,6 @@ This project demonstrates a basic observability stack, including Prometheus, Gra
 
 The application provides a foundational setup for monitoring a Kubernetes environment. It uses Prometheus to collect metrics, Grafana to visualize them, and Alertmanager to generate alerts based on Prometheus rules.  The components are designed to work together to provide a comprehensive observability solution.
 
-[Include a simple diagram here showing the components and their connections.  Since I can't visually render diagrams, I'll describe it:
-
-*   Prometheus is deployed as a pod in the Kubernetes cluster.
-*   Grafana is also deployed as a pod.
-*   Alertmanager is deployed as a pod.
-*   Prometheus is configured to scrape metrics from Kubernetes pods.
-*   Alertmanager receives alerts from Prometheus and can send notifications (e.g., email, Slack). ]
-
 ## Prerequisites
 
 Before proceeding, ensure you have the following installed and configured:
