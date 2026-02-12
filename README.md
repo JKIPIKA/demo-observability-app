@@ -133,7 +133,81 @@ receivers:
 > [!IMPORTANT]  
 > Alertmanager deployment have to be rolled out to apply new configuration.
 
-### Grafana
+### Grafana 
+
+> [!NOTE]
+>
+> Grafana can be accessed on [http://localhost:32000](http://localhost:3200). For the initial login, username and password are both "admin". After the login, a prompt to define a new admin password is displayed. Password is restarted with each restart of grafana pod as persistence is not enabled.
 
 Prometheus datasource is already pre-configued in the `templates/conf/grafana-datasource.yaml`. In case the Prometheus would be installed to different namespace, or if it would use different container port, the datasource have to be adjusted.
+
+To load already prepared dashboard, run folloing command:
+```
+kubectl apply -f templates/conf/grafana-dashboards.yaml
+```
+
+The `grafana-dashboards.yaml` contain the configuration of `grafana-dashboard-provider` and `grafana-dashboards`. The provider serves to discover dashboard configuration JSON in a filesystem and load it into Grafana itself.
+
+---
+## Custom Metric Development
+
+### Demo flask application
+
+#### Build the app
+
+To run the demo flask application in the cluster, we firstly need to build the image:
+1. Mavigate to the `resources/flask-demo-app` folder
+1. Run build command: `docker build -t flask-demo-app:latest .`
+  - you can set any image name or tag
+  - in case the `latest` tag is used, the application deployment must have set `imagePullPolicy: Never`
+
+> [!NOTE]
+> Build can be done with either `docker` or `nerdctl`, this depents on the selected container runtime in Rancher desktop. Follow official Rancher desktop [Working with Images](https://docs.rancherdesktop.io/tutorials/working-with-images/) documentation for more.<br>
+> ![rancher-preferences](documentation/images/rancher-preferences.png)
+
+#### Run & Test
+
+1. Deploy the `flask-demo-app` Deployment: `kubectl apply -f templates/flask-app.yaml`
+1. Navigate to the [Demo flask app](http://localhost:30081)
+3. Demo application contains buttons which are adjusting metrics in the backend
+  - Click button to increase counter metric
+  - Toggle button to set a value to gauge metric
+  - Demo application contains additional gauge metric which value is randomly set. 
+  - Navigate to the [Demo App /metrics endpoint](http://localhost:30081/metrics) to preview raw metric data
+
+Available metrics:
+  - demo_app_random_values 
+  - demo_app_clicks_total 
+  - demo_app_enabled 
+
+#### Metric scraping
+
+The `prometheus-server-conf` aready contains configuration of the metric target defintion.
+
+```yaml
+- job_name: 'flask-demo-app'
+  kubernetes_sd_configs:
+    - role: endpoints
+  scheme: http
+  tls_config:
+    insecure_skip_verify: true
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      action: keep
+      regex: flask-demo-app
+    - source_labels: [__meta_kubernetes_namespace]
+      action: keep
+      regex: monitoring
+```
+
+> [!NOTE]
+>
+> In case the Prometheus operator would be installed, the ServiceMonitor or PodMonitor Custom Resource Definitions could be used instead.
+
+## TODOS
+- Pushgateway for ephemeral object monitoring
+- Java demo application
+- Grafana alerts & notification delivery'
+
+
 
