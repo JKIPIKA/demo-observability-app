@@ -16,3 +16,13 @@ data:
           severity: critical
         annotations:
           summary: "Instance {{ $labels.instance }} down"
+    - name: custom-alerts
+      rules:
+        - alert: TestingAlert
+          expr: vector(1) >0
+          for: 15s
+          labels:
+            severity: warning
+          annotations:
+            summary: "Testing alert has fired"
+            runbook_url: google.com

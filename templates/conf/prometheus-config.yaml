@@ -14,6 +14,19 @@ data:
         scheme: https
         tls_config:
           insecure_skip_verify: true
+      - job_name: 'flask-demo-app'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: http
+        tls_config:
+          insecure_skip_verify: true
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_label_app]
+            action: keep
+            regex: flask-demo-app
+          - source_labels: [__meta_kubernetes_namespace]
+            action: keep
+            regex: monitoring
     alerting:
       alertmanagers:
         - static_configs:
