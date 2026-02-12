@@ -1,0 +1,8 @@
+apiVersion: v2
+name: demo-observability-app
+description: A Helm chart for deploying demo application
+type: application
+version: 0.1.0
+
+sources:
+  - https://github.com/JKIPIKA/demo-observability-app

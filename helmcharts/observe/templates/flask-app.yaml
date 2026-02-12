@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-demo-app
+  namespace: monitoring
+  labels:
+    app: flask-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-demo-app
+  template:
+    metadata:
+      labels:
+        app: flask-demo-app
+    spec:
+      containers:
+        - name: flask-demo-app
+          image: flask-demo-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081
